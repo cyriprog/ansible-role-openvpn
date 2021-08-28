@@ -89,7 +89,7 @@
 # per http://security.stackexchange.com/questions/42415/openvpn-dhparam/42418#42418
 - name: Copy pre-generated DH params
   copy:
-    src: dh.pem
+    src: "{{ openvpn_pregenerated_dh_params | default('dh.pem') }}"
     dest: "{{ openvpn_key_dir }}"
     owner: root
     group: root
