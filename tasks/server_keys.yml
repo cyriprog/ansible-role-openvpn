@@ -147,7 +147,7 @@
 # per http://security.stackexchange.com/questions/42415/openvpn-dhparam/42418#42418
 - name: server_keys | Copy pre-generated DH params
   ansible.builtin.copy:
-    src: dh.pem
+    src: "{{ openvpn_pregenerated_dh_params | default('dh.pem') }}"
     dest: "{{ openvpn_key_dir }}"
     owner: "{{ openvpn_conf_user }}"
     group: "{{ openvpn_conf_group }}"
