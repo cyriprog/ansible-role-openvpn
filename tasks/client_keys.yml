@@ -3,7 +3,9 @@
   file:
     path: "{{ openvpn_ovpn_dir }}"
     state: directory
-    mode: 0755
+    mode: "{{ openvpn_ovpn_dir_perm }}"
+    owner: root
+    group: "{{ openvpn_ovpn_dir_group }}"
 
 - name: Copy openssl client extensions
   copy:
@@ -68,8 +70,8 @@
     src: client.ovpn.j2
     dest: "{{ openvpn_ovpn_dir }}/{{ item.0.item }}-{{ inventory_hostname }}.ovpn"
     owner: root
-    group: root
-    mode: 0400
+    group: "{{ openvpn_ovpn_dir_group }}"
+    mode: "{{ openvpn_ovpn_client_perm }}"
   with_together:
     - "{{ client_certs.results }}"
     - "{{ client_keys.results }}"
