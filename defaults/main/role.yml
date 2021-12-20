@@ -9,6 +9,9 @@ openvpn_clients: []
 openvpn_base_dir: "/etc/openvpn/server"
 openvpn_key_dir: "{{ openvpn_base_dir }}/keys"
 openvpn_ovpn_dir: "{{ openvpn_base_dir }}"
+openvpn_ovpn_dir_group: root
+openvpn_ovpn_dir_perm: '0755'
+openvpn_ovpn_client_perm: '0400'
 
 # Config fetch settings
 openvpn_fetch_client_configs: true

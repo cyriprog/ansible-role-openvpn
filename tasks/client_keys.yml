@@ -3,7 +3,9 @@
   ansible.builtin.file:
     path: "{{ openvpn_ovpn_dir }}"
     state: directory
-    mode: "0755"
+    mode: "{{ openvpn_ovpn_dir_perm }}"
+    owner: root
+    group: "{{ openvpn_ovpn_dir_group }}"
 
 - name: client_keys | Copy openssl client extensions
   ansible.builtin.copy:
@@ -85,7 +87,7 @@
     dest: "{{ openvpn_ovpn_dir }}/{{ item.0.item }}-{{ inventory_hostname }}.ovpn"
     owner: "{{ openvpn_conf_user }}"
     group: "{{ openvpn_conf_group }}"
-    mode: "0400"
+    mode: "{{ openvpn_ovpn_client_perm }}"
   with_together:
     - "{{ __client_certs.results }}"
     - "{{ __client_keys.results }}"
