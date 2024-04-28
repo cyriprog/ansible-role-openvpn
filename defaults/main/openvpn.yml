@@ -21,6 +21,7 @@ openvpn_tun_mtu:
 # Security
 openvpn_auth_alg: SHA256
 openvpn_cipher: AES-256-CBC
+openvpn_data_cipher: AES-256-GCM:AES-128-GCM:AES-256-CBC:BF-CBC
 openvpn_duplicate_cn: false
 openvpn_rsa_bits: 2048
 openvpn_use_crl: false
