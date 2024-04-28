@@ -43,6 +43,31 @@ block-outside-dns
 {% if tls_auth_required %}
 key-direction 1
 {% endif %}
+
+{% if openvpn_set_dns %}
+{% if openvpn_custom_dns is defined %}
+{% if openvpn_custom_dns is string %}
+dhcp-option DNS {{ openvpn_custom_dns }}
+{% else %}
+{% if openvpn_custom_dns.__class__.__name__ == 'list' %}
+{% for srv in openvpn_custom_dns %}
+dhcp-option DNS {{ srv }}
+{% endfor %}
+{% else %}
+dhcp-option DNS 1.0.0.1
+dhcp-option DNS 1.1.1.1
+dhcp-option DNS 8.8.8.8
+dhcp-option DNS 8.8.4.4
+{% endif%}
+{% endif %}
+{% else %}
+dhcp-option DNS 1.0.0.1
+dhcp-option DNS 1.1.1.1
+dhcp-option DNS 8.8.8.8
+dhcp-option DNS 8.8.4.4
+{% endif %}
+{% endif %}
+
 <ca>
 {{ ca_cert.content|b64decode }}
 </ca>
