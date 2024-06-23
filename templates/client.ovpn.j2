@@ -14,14 +14,11 @@ proto {{ openvpn_proto }}
 remote {{ openvpn_server_hostname }} {{ openvpn_port }}
 dev tun
 
-resolv-retry {{ openvpn_resolv_retry }}
 nobind
 keepalive {{ openvpn_keepalive_ping }} {{ openvpn_keepalive_timeout }}
 {% if openvpn_compression is truthy %}
 compress {{ openvpn_compression }}
 {% endif %}
-persist-key
-persist-tun
 verb 3
 
 {% if openvpn_use_ldap is truthy %}
