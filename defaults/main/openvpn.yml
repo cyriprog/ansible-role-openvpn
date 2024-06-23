@@ -11,7 +11,6 @@ openvpn_keepalive_timeout: 30
 openvpn_port: 1194
 openvpn_proto: udp
 openvpn_redirect_gateway: true
-openvpn_resolv_retry: 5
 openvpn_server_hostname: "{{ inventory_hostname }}"
 openvpn_server_netmask: 255.255.255.0
 openvpn_server_network: 10.9.0.0
@@ -21,7 +20,6 @@ openvpn_tun_mtu:
 # Security
 openvpn_auth_alg: SHA256
 openvpn_cipher: AES-256-CBC
-openvpn_data_cipher: AES-256-GCM:AES-128-GCM:AES-256-CBC:BF-CBC
 openvpn_duplicate_cn: false
 openvpn_rsa_bits: 2048
 openvpn_use_crl: false
