@@ -68,7 +68,7 @@
   no_log: "{{ openvpn_client_config_no_log }}"
   template:
     src: client.ovpn.j2
-    dest: "{{ openvpn_ovpn_dir }}/{{ item.0.item }}-{{ inventory_hostname }}.ovpn"
+    dest: "{{ openvpn_ovpn_dir }}/{{ item.0.item }}-{{ inventory_hostname }}-{{openvpn_proto}}.ovpn"
     owner: root
     group: "{{ openvpn_ovpn_dir_group }}"
     mode: "{{ openvpn_ovpn_client_perm }}"
@@ -78,8 +78,8 @@
 
 - name: Fetch client config
   fetch:
-    src: "{{ openvpn_ovpn_dir }}/{{ item }}-{{ inventory_hostname }}.ovpn"
-    dest: "{{ openvpn_fetch_client_configs_dir }}/{{ item }}/{{ inventory_hostname }}{{ openvpn_fetch_client_configs_suffix }}.ovpn"
+    src: "{{ openvpn_ovpn_dir }}/{{ item }}-{{ inventory_hostname }}-{{openvpn_proto}}.ovpn"
+    dest: "{{ openvpn_fetch_client_configs_dir }}/{{ item }}/{{ inventory_hostname }}{{ openvpn_fetch_client_configs_suffix }}-{{openvpn_proto}}.ovpn"
     flat: true
   when: openvpn_fetch_client_configs
   with_items:

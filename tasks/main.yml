@@ -7,11 +7,14 @@
     - "../vars/{{ ansible_os_family }}.yml"
     - "../vars/empty.yml"
 
-- name: Set facts
-  import_tasks: set_facts.yml
-
 - name: Uninstall OpenVPN
-  import_tasks: uninstall.yml
+  include_tasks: uninstall.yml
+  vars:
+    openvpn_proto: "{{openvpn_listen_var.proto}}"
+    openvpn_port: "{{openvpn_listen_var.port}}"
+  loop: "{{openvpn_listen}}"
+  loop_control:
+    loop_var: openvpn_listen_var
   when: openvpn_uninstall
 
 - name: Install OpenVPN
@@ -39,18 +42,24 @@
     ignoreerrors: true
   when: openvpn_server_ipv6_network is defined and not ci_build
 
+- name: Configure SELinux
+  import_tasks: selinux.yml
+  when:
+    - ansible_selinux.status == "enabled"
+
 - name: Detect firewall type
-  import_tasks: firewall.yml
+  include_tasks: firewall.yml
+  vars:
+    openvpn_proto: "{{openvpn_listen_var.proto}}"
+    openvpn_port: "{{openvpn_listen_var.port}}"
+  loop: "{{openvpn_listen}}"
+  loop_control:
+    loop_var: openvpn_listen_var
   when:
     - not ci_build
     - manage_firewall_rules
   tags:
     - firewall
-
-- name: Configure SELinux
-  import_tasks: selinux.yml
-  when:
-    - ansible_selinux.status == "enabled"
 
 - name: Compare existing certs against 'clients' variable
   import_tasks: cert_sync_detection.yml
@@ -67,9 +76,43 @@
     or
     (openvpn_invalid_certs | length > 0)
 
-- name: Generate client configs
-  import_tasks: client_keys.yml
+- set_fact:
+    openvpn_udp_port: "{{openvpn_listen | d([]) | selectattr('proto', '==', 'udp') | map(attribute='port') }}"
+    openvpn_tcp_port: "{{openvpn_listen | d([]) | selectattr('proto', '==', 'tcp') | map(attribute='port') }}"
+    __openvpn_addl_client_options: "{{openvpn_addl_client_options | d([])}}"
+
+- set_fact:
+    openvpn_udp_remote: >
+        {{
+                ["remote " + openvpn_server_hostname ] | product(openvpn_udp_port[1:]) | map('join', ' ')
+        }}
+    openvpn_tcp_remote: >
+        {{
+                ["remote " + openvpn_server_hostname ] | product(openvpn_tcp_port[1:]) | map('join', ' ')
+        }}
+
+- name: Generate data for proto tcp
+  include_tasks: client_keys.yml
+  vars:
+    openvpn_proto: "tcp"
+    openvpn_port: "{{openvpn_tcp_port[0]}}"
+    openvpn_addl_client_options: "{{__openvpn_addl_client_options + openvpn_tcp_remote}}"
+  when: clients is defined
+
+- name: Generate data for proto udp
+  include_tasks: client_keys.yml
+  vars:
+    openvpn_proto: "udp"
+    openvpn_port: "{{openvpn_udp_port[0]}}"
+    openvpn_addl_client_options: "{{__openvpn_addl_client_options + openvpn_udp_remote}}"
   when: clients is defined
 
 - name: Configure OpenVPN server
-  import_tasks: config.yml
+  include_tasks: config.yml
+  vars:
+    openvpn_proto: "{{openvpn_listen_var.proto}}"
+    openvpn_port: "{{openvpn_listen_var.port}}"
+    openvpn_server_network: "{{openvpn_listen_var.server_network}}"
+  loop: "{{openvpn_listen}}"
+  loop_control:
+    loop_var: openvpn_listen_var

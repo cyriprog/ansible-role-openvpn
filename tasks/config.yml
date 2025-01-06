@@ -1,4 +1,7 @@
 ---
+- name: Set facts
+  import_tasks: set_facts.yml
+
 - name: Create openvpn config file
   template:
     src: server.conf.j2
