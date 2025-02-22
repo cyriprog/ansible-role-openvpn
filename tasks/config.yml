@@ -128,7 +128,7 @@
     - name: config | Copy openvpn service override file
       ansible.builtin.copy:
         src: openvpn-server-override.conf
-        dest: /etc/systemd/system/openvpn-server@.service.d/override.conf
+        dest: "/etc/systemd/system/openvpn-server@.service.d/{{ openvpn_service_name }}.conf"
         mode: "0644"
 
 - name: config | Setup openvpn auto-start & start
