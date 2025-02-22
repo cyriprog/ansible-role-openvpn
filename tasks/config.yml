@@ -130,6 +130,14 @@
         src: openvpn-server-override.conf
         dest: "/etc/systemd/system/openvpn-server@.service.d/{{ openvpn_service_name }}.conf"
         mode: "0644"
+      register: _openvpen_systemd_changed
+    - name: config | Reload configuration
+      ansible.builtin.systemd_service:
+        name: "{{ openvpn_service_name }}"
+        daemon_reload: true
+        enabled: true
+        state: restarted
+      when: _openvpen_systemd_changed.changed
 
 - name: config | Setup openvpn auto-start & start
   ansible.builtin.service:
@@ -137,4 +145,6 @@
     enabled: true
     state: started
   # Github Actions doesn't allow entrypoints, so PID 1 isn't an init system
-  when: ansible_service_mgr != "tail"
+  when:
+    - ansible_service_mgr != "tail"
+    - ansible_service_mgr != "systemd"
