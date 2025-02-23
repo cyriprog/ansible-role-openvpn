@@ -43,6 +43,8 @@ openvpn_tls_auth_required: false
 openvpn_use_tls_crypt: true
 openvpn_script_security: 1
 
+openvpn_block_outside_dns: false
+
 # Operations
 openvpn_addl_client_options: []
 openvpn_addl_server_options: []

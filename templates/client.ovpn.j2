@@ -38,6 +38,9 @@ route-delay 2
 # Note: This is a Windows-specific directive, remove it if this is meant to be used on non-Windows
 register-dns
 {% endif %}
+{% if openvpn_block_outside_dns %}
+block-outside-dns
+{% endif %}
 
 {% if openvpn_tls_auth_required %}
 key-direction 1
