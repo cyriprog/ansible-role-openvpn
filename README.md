@@ -47,7 +47,7 @@ These options change how the role works. This is a catch-all group, specific gro
 
 | Variable                     | Type    | Choices     | Default           | Comment                                                                       |
 |------------------------------|---------|-------------|-------------------|-------------------------------------------------------------------------------|
-| clients                      | list    |             | []                | List of clients to add to OpenVPN                                             |
+| openvpn_clients                      | list    |             | []                | List of clients to add to OpenVPN                                             |
 | openvpn_base_dir             | string  |             | /etc/openvpn/server      | Path where your OpenVPN config will be stored                                 |
 | openvpn_client_config_no_log | boolean | true, false | true              | Prevent client configuration files to be logged to stdout by Ansible          |
 | openvpn_key_dir              | string  |             | /etc/openvpn/keys | Path where your server private keys and CA will be stored                     |
@@ -216,7 +216,7 @@ Does not depend on any other roles
     - role: kyl191.openvpn
       openvpn_port: 4300
       openvpn_sync_certs: true
-      clients:
+      openvpn_clients:
         - client1
         - client2
 ```
