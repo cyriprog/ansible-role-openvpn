@@ -62,6 +62,12 @@
     (openvpn_revoke_these_certs is defined)
     or
     (openvpn_sync_certs is truthy and cert_sync_certs_to_revoke.stdout_lines | length > 0)
+    or
+    (openvpn_invalid_certs | length > 0)
+
+- name: Generate client configs
+  import_tasks: client_keys.yml
+  when: clients is defined
 
 - name: Configure OpenVPN server
   ansible.builtin.import_tasks: config.yml
