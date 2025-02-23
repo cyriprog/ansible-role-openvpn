@@ -8,7 +8,13 @@
     - "../vars/empty.yml"
 
 - name: Uninstall OpenVPN
-  ansible.builtin.import_tasks: uninstall.yml
+  ansible.builtin.include_tasks: uninstall.yml
+  vars:
+    openvpn_proto: "{{openvpn_listen_var.proto}}"
+    openvpn_port: "{{openvpn_listen_var.port}}"
+  loop: "{{openvpn_listen}}"
+  loop_control:
+    loop_var: openvpn_listen_var
   when: openvpn_uninstall is truthy
 
 - name: Install OpenVPN
@@ -31,18 +37,24 @@
     value: "1"
   when: openvpn_server_ipv6_network is defined and openvpn_ci_build is falsy
 
+- name: Configure SELinux
+  import_tasks: selinux.yml
+  when:
+    - ansible_selinux.status == "enabled"
+
 - name: Detect firewall type
-  ansible.builtin.import_tasks: firewall/firewall.yml
+  ansible.builtin.include_tasks: firewall/firewall.yml
+  vars:
+    openvpn_proto: "{{openvpn_listen_var.proto}}"
+    openvpn_port: "{{openvpn_listen_var.port}}"
+  loop: "{{openvpn_listen}}"
+  loop_control:
+    loop_var: openvpn_listen_var
   when:
     - openvpn_ci_build is falsy
     - openvpn_manage_firewall_rules
   tags:
     - firewall
-
-- name: Configure SELinux
-  ansible.builtin.import_tasks: selinux.yml
-  when:
-    - ansible_selinux.status == "enabled"
 
 - name: Compare existing certs against 'clients' variable
   ansible.builtin.import_tasks: cert_sync_detection.yml
@@ -65,9 +77,12 @@
     or
     (openvpn_invalid_certs | length > 0)
 
-- name: Generate client configs
-  import_tasks: client_keys.yml
-  when: clients is defined
-
 - name: Configure OpenVPN server
-  ansible.builtin.import_tasks: config.yml
+  include_tasks: config.yml
+  vars:
+    openvpn_proto: "{{openvpn_listen_var.proto}}"
+    openvpn_port: "{{openvpn_listen_var.port}}"
+    openvpn_server_network: "{{openvpn_listen_var.server_network}}"
+  loop: "{{openvpn_listen}}"
+  loop_control:
+    loop_var: openvpn_listen_var

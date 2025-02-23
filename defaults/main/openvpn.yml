@@ -15,8 +15,9 @@ openvpn_custom_ipv6_dns:
 openvpn_dualstack: true
 openvpn_keepalive_ping: 5
 openvpn_keepalive_timeout: 30
-openvpn_port: 1194
-openvpn_proto: udp
+openvpn_listen:
+  - port: 1194
+    proto: udp
 openvpn_redirect_gateway: "def1 bypass-dhcp ipv6"
 openvpn_server_hostname: "{{ inventory_hostname }}"
 openvpn_server_netmask: 255.255.255.0

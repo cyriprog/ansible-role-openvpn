@@ -6,8 +6,6 @@
     owner: "{{ openvpn_conf_user }}"
     group: "{{ openvpn_conf_group }}"
     mode: "0644"
-  notify:
-    - Restart openvpn
 
 - name: config | Copy up script if defined
   ansible.builtin.copy:
@@ -143,7 +141,7 @@
   ansible.builtin.service:
     name: "{{ openvpn_service_name }}"
     enabled: true
-    state: started
+    state: restarted
   # Github Actions doesn't allow entrypoints, so PID 1 isn't an init system
   when:
     - ansible_service_mgr != "tail"

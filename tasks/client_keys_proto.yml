@@ -1,0 +1,21 @@
+---
+- name: client_keys | Generate client config
+  no_log: "{{ openvpn_client_config_no_log }}"
+  ansible.builtin.template:
+    src: client.ovpn.j2
+    dest: "{{ openvpn_ovpn_dir }}/{{ item.0.item }}-{{ inventory_hostname }}-{{openvpn_proto}}.ovpn"
+    owner: "{{ openvpn_conf_user }}"
+    group: "{{ openvpn_conf_group }}"
+    mode: "{{ openvpn_ovpn_client_perm }}"
+  with_together:
+    - "{{ __client_certs.results }}"
+    - "{{ __client_keys.results }}"
+
+- name: client_keys | Fetch client config
+  ansible.builtin.fetch:
+    src: "{{ openvpn_ovpn_dir }}/{{ item }}-{{ inventory_hostname }}-{{openvpn_proto}}.ovpn"
+    dest: "{{ openvpn_fetch_client_configs_dir }}/{{ item }}/{{ inventory_hostname }}-{{openvpn_proto}}{{ openvpn_fetch_client_configs_suffix }}.ovpn"
+    flat: true
+  when: openvpn_fetch_client_configs is truthy
+  with_items:
+    - "{{ openvpn_clients }}"
