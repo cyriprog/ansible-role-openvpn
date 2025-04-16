@@ -55,8 +55,6 @@
     - openvpn_invalid_certificates.stdout is defined
     - openvpn_invalid_certificates.stdout | length > 0
   loop: "{{ openvpn_existing_client_crt }}"
-  loop_control:
-    label: "{{ item + ' : ' + (openvpn_invalid_certificates | d({}) | to_yaml) }}"
 
 - name: "[cert sync] detect disable certificate"
   set_fact:
